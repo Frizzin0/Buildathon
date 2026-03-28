@@ -1,0 +1,6 @@
+name: buildathon
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - nodejs=24
