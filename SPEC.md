@@ -34,3 +34,27 @@ An MCP-powered meal planning assistant that generates a personalized weekly meal
 - **Output**: Same as input (pass-through)
 - **Views**: 7-column Kanban board (fullscreen), 5 cards per column
 - **Behavior**: Renders meal plan; LLM re-invokes with updated data for surgical modifications; `data-llm` on each card for natural references
+
+## Nice to have
+
+**Data & planning**
+
+- Shopping list: aggregate `ingredients` from the active week, dedupe (query + LLM cleanup).
+- Recipe book: promote saved meals to a `recipes` table; reuse in future plans.
+- Plan history: browse past weeks (`is_active = false` or equivalent).
+- Micronutrients on meals (e.g. fibre, sugar, saturated fat).
+- Cached macro targets on the user profile if LLM latency becomes painful.
+- Multi-user / household plans (shared `household_id`, RLS updates).
+
+**UX & interaction**
+
+- Editable slots in the widget: clear a slot, mark it as a “free meal”, or pick/swap in another recipe without relying only on chat.
+- Drag-and-drop on the Kanban (update `sort_order` / move across day + meal slot) in addition to chat edits.
+- “Start from last week” to clone or adapt a previous plan.
+- Export week (PDF, calendar, or plain text for sharing).
+
+**MCP / assistant**
+
+- Dedicated tool(s) for shopping list, recipe CRUD, or history — not only widgets.
+- Resources: short nutrition or cuisine guides the model can cite.
+- Validation tool for plan JSON against your schema (CI + assistant self-check).
