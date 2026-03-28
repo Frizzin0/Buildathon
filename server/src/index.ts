@@ -69,7 +69,11 @@ const server = new McpServer(
    c. Calculate TDEE and macro targets from the profile.
    d. Call get-recent-meals with the new userId (will return empty for new users).
    e. Generate a full 7-day meal plan.
-   f. Call save-meal-plan to persist it.
+   f. Save the plan by calling save-meal-plan multiple times, 2 days per call:
+      - Call 1: Monday & Tuesday
+      - Call 2: Wednesday & Thursday
+      - Call 3: Friday & Saturday
+      - Call 4: Sunday
    g. Call show-meal-plan with userId and weekStart to display the saved plan.
 4. If lookup-user returns found = true AND currentWeekPlan is present:
    a. Greet the returning user by name.
@@ -80,10 +84,10 @@ const server = new McpServer(
    b. Call get-recent-meals to fetch meals from the last 2 weeks.
    c. Calculate TDEE and macro targets from the stored profile.
    d. Generate a new 7-day plan. AVOID repeating any meal names returned by get-recent-meals — maximize variety.
-   e. Call save-meal-plan to persist it.
+   e. Save the plan by calling save-meal-plan multiple times, 2 days per call (same batching as step 3f).
    f. Call show-meal-plan with userId and weekStart to display the saved plan.
 6. On modification requests:
-   a. Call save-meal-plan with the full updated plan (complete plan where only the changed meal(s) differ).
+   a. Call save-meal-plan with only the modified day(s) — no need to resend the entire plan.
    b. Re-invoke show-meal-plan with userId to refresh the display.
 
 ## TDEE & Macro Calculation
@@ -274,7 +278,7 @@ const server = new McpServer(
     "save-meal-plan",
     {
       description:
-        "Persist a meal plan to the database. Call this after generating or modifying a plan displayed via show-meal-plan. Deactivates any previous plan for the same week.",
+        "Persist meal-plan days to the database. Supports incremental saves: the first call for a given week creates the plan header; subsequent calls for the same week append or replace days. Save at most 2 days per call to stay within tool-call size limits. After all 7 days are saved, call show-meal-plan to display the plan.",
       inputSchema: {
         userId: z.string().uuid().describe("The user's UUID"),
         weekStart: z
@@ -283,8 +287,11 @@ const server = new McpServer(
         targets: targetsSchema.describe("Daily nutritional targets"),
         days: z
           .array(dayPlanSchema)
-          .length(7)
-          .describe("Exactly 7 day plans, Monday through Sunday"),
+          .min(1)
+          .max(7)
+          .describe(
+            "1 to 7 day plans. Save at most 2 days per call (e.g. Monday–Tuesday, then Wednesday–Thursday, etc.)",
+          ),
       },
     },
     async (input) => {

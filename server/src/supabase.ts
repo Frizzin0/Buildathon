@@ -224,38 +224,59 @@ export async function saveMealPlan(
   widgetPlan: WidgetPlan,
 ): Promise<string> {
   const weekStart = widgetPlan.weekStart;
-
   const db = getClient();
 
-  await db
+  const { data: existing } = await db
     .from("meal_plans")
-    .update({ is_active: false })
+    .select("id")
     .eq("user_id", userId)
     .eq("week_start", weekStart)
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .maybeSingle();
 
-  const { data: plan, error: planErr } = await db
-    .from("meal_plans")
-    .insert({
-      user_id: userId,
-      week_start: weekStart,
-      is_active: true,
-      targets_kcal: widgetPlan.targets.kcal,
-      targets_protein: widgetPlan.targets.protein,
-      targets_carbs: widgetPlan.targets.carbs,
-      targets_fat: widgetPlan.targets.fat,
-    })
-    .select("id")
-    .single();
+  let mealPlanId: string;
 
-  if (planErr) throw planErr;
+  if (existing) {
+    mealPlanId = existing.id;
+    const dayIndices = widgetPlan.days.map(
+      (d) => DAY_NAMES.indexOf(d.day as (typeof DAY_NAMES)[number]),
+    );
+    await db
+      .from("meals")
+      .delete()
+      .eq("meal_plan_id", mealPlanId)
+      .in("day_index", dayIndices);
+  } else {
+    await db
+      .from("meal_plans")
+      .update({ is_active: false })
+      .eq("user_id", userId)
+      .eq("week_start", weekStart)
+      .eq("is_active", true);
 
-  const mealRows = widgetToDbMeals(plan.id, widgetPlan);
+    const { data: plan, error: planErr } = await db
+      .from("meal_plans")
+      .insert({
+        user_id: userId,
+        week_start: weekStart,
+        is_active: true,
+        targets_kcal: widgetPlan.targets.kcal,
+        targets_protein: widgetPlan.targets.protein,
+        targets_carbs: widgetPlan.targets.carbs,
+        targets_fat: widgetPlan.targets.fat,
+      })
+      .select("id")
+      .single();
 
+    if (planErr) throw planErr;
+    mealPlanId = plan.id as string;
+  }
+
+  const mealRows = widgetToDbMeals(mealPlanId, widgetPlan);
   const { error: mealsErr } = await db.from("meals").insert(mealRows);
   if (mealsErr) throw mealsErr;
 
-  return plan.id as string;
+  return mealPlanId;
 }
 
 export async function getRecentMeals(
@@ -358,12 +379,12 @@ function widgetToDbMeals(
 ): Record<string, unknown>[] {
   const rows: Record<string, unknown>[] = [];
 
-  for (let dayIdx = 0; dayIdx < widgetPlan.days.length; dayIdx++) {
-    const dayPlan = widgetPlan.days[dayIdx];
+  for (const dayPlan of widgetPlan.days) {
+    const dayIdx = DAY_NAMES.indexOf(dayPlan.day as (typeof DAY_NAMES)[number]);
 
     for (const [widgetKey, dbType] of Object.entries(WIDGET_KEY_TO_DB)) {
       const meal = dayPlan[widgetKey as keyof WidgetDayPlan];
-      if (typeof meal === "string") continue; // skip the "day" field
+      if (typeof meal === "string") continue;
 
       const m = meal as WidgetMeal;
       rows.push({
