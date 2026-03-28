@@ -1,166 +1,97 @@
-# Alpic MCP Template
+# Skybridge Starter
 
-A TypeScript template for building MCP servers using Streamable HTTP transport.
+A minimal TypeScript template for building MCP and ChatGPT Apps with the [Skybridge](https://docs.skybridge.tech/home) framework.
 
-## Overview
+## Getting Started
 
-This template provides a foundation for creating MCP servers that can communicate with AI assistants and other MCP clients. It includes a simple HTTP server implementation with example tools, resource & prompts to help you get started building your own MCP integrations.
+### Prerequisites
 
-## Deploy
+- Node.js 24+
+- HTTP tunnel such as [Alpic tunnel](https://docs.alpic.ai/cli/tunnel) if you want to test with remote MCP hosts like ChatGPT or Claude.ai.
 
-Use the following button to clone the repository and directly deploy the server to Alpic
+### Local Development
 
-[![Deploy on Alpic](https://assets.alpic.ai/button.svg)](https://app.alpic.ai/new/clone?repositoryUrl=https%3A%2F%2Fgithub.com%2Falpic-ai%2Fmcp-server-template-nodejs)
-
-
-## Prerequisites
-
-- Node.js 22+ (see `.nvmrc` for exact version)
-
-## Installation
-
-1. Clone the repository:
-
-```bash
-git clone <repository-url>
-cd mcp-server-template
-```
-
-2. Install dependencies:
+#### 1. Install
 
 ```bash
 npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
 ```
 
-3. Create environment file:
+#### 2. Start your local server
 
-```bash
-cp .env.example .env
-```
-
-## Usage
-
-### Development
-
-Start the development server with hot-reload:
+Run the development server from the root directory:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-The server will start on `http://localhost:3000` and automatically restart when you make changes to the source code.
+This command starts:
+- Your MCP server at `http://localhost:3000/mcp`.
+- Skybridge DevTools UI at `http://localhost:3000/`.
 
-### Production Build
+#### 3. Project structure
 
-Build the project for production:
-
-```bash
-npm run build
+```
+├── server/
+│   └── src/
+│       └── index.ts      # Server entry point
+├── web/
+│   ├── src/
+│   │   ├── widgets/      # React components (one per widget)
+│   │   ├── helpers.ts    # Shared utilities
+│   │   └── index.css     # Global styles
+│   └── vite.config.ts
+├── alpic.json            # Deployment config
+├── nodemon.json          # Dev server config
+└── package.json
 ```
 
-The compiled JavaScript will be output to the `dist/` directory.
+### Create your first widget
 
-### Running the Inspector
+#### 1. Add a new widget
 
-Use the MCP inspector tool to test your server:
+- Register a widget in `server/src/server.ts` with a unique name (e.g., `my-widget`) using [`registerWidget`](https://docs.skybridge.tech/api-reference/register-widget)
+- Create a matching React component at `web/src/widgets/my-widget.tsx`. **The file name must match the widget name exactly**.
 
-```bash
-npm run inspector
-```
+#### 2. Edit widgets with Hot Module Replacement (HMR)
 
-## API Endpoints
+Edit and save components in `web/src/widgets/` — changes will appear instantly inside your App.
 
-- `POST /mcp` - Main MCP communication endpoint
-- `GET /mcp` - Returns "Method not allowed" (405)
-- `DELETE /mcp` - Returns "Method not allowed" (405)
+#### 3. Edit server code
+
+Modify files in `server/` and refresh the connection with your testing MCP Client to see the changes.
+
+### Testing your App
+
+You can test your App locally by using our DevTools UI on `localhost:3000` while running the `pnpm dev` command.
+
+To test your app with other MCP Clients like ChatGPT, Claude or VSCode, see [Testing Your App](https://docs.skybridge.tech/quickstart/test-your-app).
 
 
-## Development
+## Deploy to Production
 
-### Adding New Tools
+Skybridge is infrastructure vendor agnostic, and your app can be deployed on any cloud platform supporting MCP.
 
-To add a new tool, modify `src/server.ts`:
-
-```typescript
-server.registerTool(
-  "tool-name",
-  {
-    title: "Tool Title",
-    description: "Tool description",
-    inputSchema: {
-      // Define your parameters using Zod schemas
-      param: z.string().describe("Parameter description"),
-    },
-  },
-  async ({ param }): Promise<CallToolResult> => {
-    // Your tool implementation
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Result: ${param}`,
-        },
-      ],
-    };
-  },
-);
-```
-
-### Adding New Prompts
-
-To add a new prompt template, modify `src/server.ts`:
-
-```typescript
-server.registerPrompt(
-  "prompt-name",
-  {
-    title: "Prompt Title",
-    description: "Prompt description",
-    argsSchema: {
-      // Define your parameters using Zod schemas
-      param: z.string().describe("Parameter description"),
-    },
-  },
-  async ({ param }): Promise<GetPromptResult> => {
-    return {
-      messages: [
-        {
-          role: "user",
-          content: {
-            type: "text",
-            text: `Your prompt content with ${param}`,
-          },
-        },
-      ],
-    };
-  },
-);
-```
-
-### Adding New Resources
-
-To add a new resource, modify `src/server.ts`:
-
-```typescript
-server.registerResource(
-  "resource-name",
-  "https://example.com/resource-uri",
-  { mimeType: "text/plain" },
-  async (): Promise<ReadResourceResult> => {
-    return {
-      contents: [
-        {
-          uri: "https://example.com/resource-uri",
-          text: "Resource content",
-        },
-      ],
-    };
-  },
-);
-```
+The simplest way to deploy your App in minutes is [Alpic](https://alpic.ai/).
+1. Create an account on [Alpic platform](https://app.alpic.ai/). 
+2. Connect your GitHub repository to automatically deploy at each commit. 
+3. Use your remote App URL to connect it to MCP Clients, or use the Alpic Playground to easily test your App.
 
 ## Resources
-
+- [Skybridge Documentation](https://docs.skybridge.tech/)
+- [Apps SDK Documentation](https://developers.openai.com/apps-sdk)
+- [MCP Apps Documentation](https://github.com/modelcontextprotocol/ext-apps/tree/main)
 - [Model Context Protocol Documentation](https://modelcontextprotocol.io/)
-- [MCP SDK Documentation](https://github.com/modelcontextprotocol/typescript-sdk)
-- [Express.js Documentation](https://expressjs.com/)
+- [Alpic Documentation](https://docs.alpic.ai/)

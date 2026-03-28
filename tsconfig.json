@@ -1,19 +1,13 @@
 {
+  "extends": "skybridge/tsconfig",
+
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "outDir": "dist",
-    "rootDir": "src",
-    "sourceMap": true,
-    "allowJs": true,
-    "strict": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./web/src/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+
+  "include": ["server/src", "web/src"]
 }
