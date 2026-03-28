@@ -1,9 +1,9 @@
 import "@/index.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   mountWidget,
-  useLayout,
+  getAdaptor,
   useWidgetState,
   useSendFollowUpMessage,
 } from "skybridge/web";
@@ -13,6 +13,7 @@ type Step = (typeof steps)[number];
 type Option = { value: string; label: string; desc?: string; icon?: string };
 
 type ProfileState = {
+  name: string;
   age: string;
   sex: string;
   height: string;
@@ -30,6 +31,7 @@ type ProfileState = {
 };
 
 const INITIAL_STATE: ProfileState = {
+  name: "",
   age: "",
   sex: "",
   height: "",
@@ -49,8 +51,18 @@ const INITIAL_STATE: ProfileState = {
 function CollectProfile() {
   const [state, setState] = useWidgetState(INITIAL_STATE);
   const [currentStep, setCurrentStep] = useState(0);
-  const { theme } = useLayout();
   const sendMessage = useSendFollowUpMessage();
+
+  const [theme, setTheme] = useState(
+    () => getAdaptor().getHostContextStore("theme").getSnapshot() ?? "light",
+  );
+  useEffect(() => {
+    const store = getAdaptor().getHostContextStore("theme");
+    const sync = () => setTheme(store.getSnapshot() ?? "light");
+    sync();
+    return store.subscribe(sync);
+  }, []);
+
   const dark = theme === "dark";
 
   const step = steps[currentStep] as Step;
@@ -93,6 +105,7 @@ function CollectProfile() {
   const handleSubmit = () => {
     setState((prev) => ({ ...prev, submitted: true }));
     sendMessage(`The user has submitted their dietary profile. Here is the data:
+- Name: ${state.name}
 - Age: ${state.age} years
 - Sex: ${state.sex}
 - Height: ${state.height} cm

@@ -1,5 +1,14 @@
 [
   {
+    "id": "name",
+    "section": "Personal Data",
+    "question": "What's your first name?",
+    "subtitle": "So we can personalize your experience",
+    "type": "text",
+    "placeholder": "e.g. Marco",
+    "required": true
+  },
+  {
     "id": "age",
     "section": "Personal Data",
     "question": "How old are you?",
