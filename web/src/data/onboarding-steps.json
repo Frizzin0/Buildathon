@@ -1,0 +1,162 @@
+[
+  {
+    "id": "age",
+    "section": "Personal Data",
+    "question": "How old are you?",
+    "subtitle": "Used for TDEE calculation",
+    "type": "number",
+    "placeholder": "32",
+    "unit": "years",
+    "required": true
+  },
+  {
+    "id": "sex",
+    "section": "Personal Data",
+    "question": "What is your biological sex?",
+    "subtitle": "Used to estimate calorie needs",
+    "type": "toggle",
+    "options": [
+      { "value": "male", "label": "Male" },
+      { "value": "female", "label": "Female" }
+    ],
+    "required": true
+  },
+  {
+    "id": "height",
+    "section": "Personal Data",
+    "question": "What is your height?",
+    "subtitle": "Combined with weight to fine-tune targets",
+    "type": "number",
+    "placeholder": "178",
+    "unit": "cm",
+    "required": true
+  },
+  {
+    "id": "weight",
+    "section": "Personal Data",
+    "question": "What is your current weight?",
+    "subtitle": "Used to calculate your energy needs",
+    "type": "number",
+    "placeholder": "82",
+    "unit": "kg",
+    "required": true
+  },
+  {
+    "id": "goalWeight",
+    "section": "Personal Data",
+    "question": "What is your goal weight?",
+    "subtitle": "Optional — helps calibrate surplus or deficit",
+    "type": "number",
+    "placeholder": "76",
+    "unit": "kg",
+    "required": false
+  },
+  {
+    "id": "activityLevel",
+    "section": "Lifestyle & Activity",
+    "question": "How active are you on a typical day?",
+    "subtitle": "Used to apply the correct TDEE activity multiplier",
+    "type": "radio",
+    "options": [
+      { "value": "sedentary", "label": "Sedentary", "desc": "Desk job, little movement" },
+      { "value": "lightly_active", "label": "Lightly active", "desc": "1\u20133 workouts/week" },
+      { "value": "moderately_active", "label": "Moderately active", "desc": "4\u20135 workouts/week" },
+      { "value": "very_active", "label": "Very active", "desc": "Physical job or daily training" }
+    ],
+    "required": true
+  },
+  {
+    "id": "dietStyle",
+    "section": "Lifestyle & Activity",
+    "question": "Do you follow a specific diet style?",
+    "subtitle": "We'll tailor recipes to your preferences",
+    "type": "pills",
+    "options": [
+      { "value": "no_preference", "label": "No preference" },
+      { "value": "mediterranean", "label": "Mediterranean" },
+      { "value": "high_protein", "label": "High protein" },
+      { "value": "vegetarian", "label": "Vegetarian" },
+      { "value": "vegan", "label": "Vegan" },
+      { "value": "keto", "label": "Keto / Low carb" }
+    ],
+    "defaultValue": "no_preference",
+    "required": true
+  },
+  {
+    "id": "goal",
+    "section": "Goal",
+    "question": "What is your primary goal?",
+    "subtitle": "Sets your caloric surplus/deficit and macro split",
+    "type": "icon-cards",
+    "options": [
+      { "value": "lose_weight", "label": "Lose weight", "icon": "\ud83d\udcc9" },
+      { "value": "maintain", "label": "Maintain weight", "icon": "\u2696\ufe0f" },
+      { "value": "gain_muscle", "label": "Gain muscle", "icon": "\ud83d\udcaa" },
+      { "value": "eat_healthier", "label": "Eat healthier", "icon": "\ud83e\udd66" }
+    ],
+    "required": true
+  },
+  {
+    "id": "mealsPerDay",
+    "section": "Goal",
+    "question": "How many meals do you eat per day?",
+    "subtitle": "Helps distribute macros across your day",
+    "type": "radio",
+    "options": [
+      { "value": "3", "label": "3 meals", "desc": "Breakfast, lunch, dinner" },
+      { "value": "4", "label": "4 meals", "desc": "+ 1 snack" },
+      { "value": "5", "label": "5 meals", "desc": "+ 2 snacks" }
+    ],
+    "required": true
+  },
+  {
+    "id": "intolerances",
+    "section": "Restrictions",
+    "question": "Any food intolerances or allergies?",
+    "subtitle": "Select all that apply, or skip if none",
+    "type": "multi-select",
+    "options": [
+      { "value": "gluten", "label": "Gluten" },
+      { "value": "lactose", "label": "Lactose" },
+      { "value": "nuts", "label": "Nuts" },
+      { "value": "eggs", "label": "Eggs" },
+      { "value": "shellfish", "label": "Shellfish" }
+    ],
+    "required": false
+  },
+  {
+    "id": "dislikes",
+    "section": "Restrictions",
+    "question": "Any foods you strongly dislike or avoid?",
+    "subtitle": "e.g. \"no fish\", \"I hate broccoli\", \"no offal\"",
+    "type": "text",
+    "placeholder": "e.g. no fish, no liver...",
+    "required": false
+  },
+  {
+    "id": "cookingTime",
+    "section": "Cooking Context",
+    "question": "How much time do you have to cook on weekdays?",
+    "subtitle": "We'll suggest meals that fit your routine",
+    "type": "radio",
+    "options": [
+      { "value": "under_20min", "label": "Under 20 minutes", "desc": "Quick meals only" },
+      { "value": "20_40min", "label": "20\u201340 minutes", "desc": "Moderate cooking" },
+      { "value": "no_limit", "label": "No time limit", "desc": "I enjoy cooking" }
+    ],
+    "required": true
+  },
+  {
+    "id": "mealPrep",
+    "section": "Cooking Context",
+    "question": "Do you meal prep?",
+    "subtitle": "Cook in bulk for several days",
+    "type": "radio",
+    "options": [
+      { "value": "yes", "label": "Yes, regularly", "desc": "I batch cook often" },
+      { "value": "sometimes", "label": "Sometimes", "desc": "When I have time" },
+      { "value": "no", "label": "No", "desc": "I prefer fresh meals daily" }
+    ],
+    "required": true
+  }
+]
