@@ -138,6 +138,15 @@ function currentWeekMonday(): string {
   return monday.toISOString().slice(0, 10);
 }
 
+function nextWeekMonday(): string {
+  const now = new Date();
+  const day = now.getUTCDay();
+  const diff = day === 0 ? 1 : 8 - day;
+  const monday = new Date(now);
+  monday.setUTCDate(now.getUTCDate() + diff);
+  return monday.toISOString().slice(0, 10);
+}
+
 // ---------------------------------------------------------------------------
 // Public helpers
 // ---------------------------------------------------------------------------
@@ -145,12 +154,17 @@ function currentWeekMonday(): string {
 export async function lookupUser(
   name: string,
 ): Promise<UserProfile | null> {
+  const trimmed = name.trim();
+  console.log("[lookup-user] searching for name:", JSON.stringify(trimmed));
+
   const { data, error } = await getClient()
     .from("users")
     .select("*")
-    .ilike("name", name)
+    .ilike("name", trimmed)
     .limit(1)
     .maybeSingle();
+
+  console.log("[lookup-user] result:", { found: !!data, error, id: data?.id });
 
   if (error) throw error;
   return data as UserProfile | null;
@@ -191,32 +205,38 @@ export async function getCurrentPlan(
   userId: string,
   weekStart?: string,
 ): Promise<WidgetPlan | null> {
-  const ws = weekStart ?? currentWeekMonday();
-
   const db = getClient();
 
-  const { data: plan, error: planErr } = await db
-    .from("meal_plans")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("week_start", ws)
-    .eq("is_active", true)
-    .limit(1)
-    .maybeSingle();
+  const weekCandidates = weekStart
+    ? [weekStart]
+    : [currentWeekMonday(), nextWeekMonday()];
 
-  if (planErr) throw planErr;
-  if (!plan) return null;
+  for (const ws of weekCandidates) {
+    const { data: plan, error: planErr } = await db
+      .from("meal_plans")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("week_start", ws)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
 
-  const { data: meals, error: mealsErr } = await db
-    .from("meals")
-    .select("*")
-    .eq("meal_plan_id", plan.id)
-    .order("day_index")
-    .order("sort_order");
+    if (planErr) throw planErr;
+    if (!plan) continue;
 
-  if (mealsErr) throw mealsErr;
+    const { data: meals, error: mealsErr } = await db
+      .from("meals")
+      .select("*")
+      .eq("meal_plan_id", plan.id)
+      .order("day_index")
+      .order("sort_order");
 
-  return dbToWidget(plan, meals as MealRow[]);
+    if (mealsErr) throw mealsErr;
+
+    return dbToWidget(plan, meals as MealRow[]);
+  }
+
+  return null;
 }
 
 export async function saveMealPlan(
