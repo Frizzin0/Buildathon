@@ -1,6 +1,12 @@
 import "@/index.css";
 
-import { Fragment, useEffect, useState, useRef, useCallback } from "react";
+import {
+  Fragment,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { mountWidget, useLayout, useDisplayMode } from "skybridge/web";
 import { useToolInfo } from "../helpers.js";
 
@@ -52,6 +58,47 @@ const MEAL_ICONS: Record<string, string> = {
   afternoonSnack: "·",
   dinner: "☽",
 };
+
+/** Calendar week Mon–Sun, aligned with meal plan `day` values from the API */
+const CALENDAR_WEEK = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+] as const;
+
+/** 0 = Monday … 6 = Sunday (from `Date#getDay()`) */
+function getTodayMondayBasedIndex(d: Date): number {
+  const js = d.getDay();
+  return js === 0 ? 6 : js - 1;
+}
+
+/** Weekday names in column order: tomorrow first, then the next 6 days */
+function getDisplayDayOrder(now = new Date()): (typeof CALENDAR_WEEK)[number][] {
+  const todayIdx = getTodayMondayBasedIndex(now);
+  const start = (todayIdx + 1) % 7;
+  return Array.from(
+    { length: 7 },
+    (_, i) => CALENDAR_WEEK[(start + i) % 7],
+  );
+}
+
+function orderDayPlansByNames(
+  plans: DayPlan[],
+  order: readonly string[],
+): DayPlan[] {
+  const map = new Map(plans.map((p) => [p.day, p]));
+  return order.map((name) => {
+    const p = map.get(name);
+    if (!p) {
+      throw new Error(`Meal plan is missing day: ${name}`);
+    }
+    return p;
+  });
+}
 
 type DragSource = {
   dayIndex: number;
@@ -210,7 +257,7 @@ function MealDetailModal({
                 <span
                   className={`font-medium tabular-nums ${dark ? "text-neutral-400" : "text-neutral-500"}`}
                 >
-                  ${meal.price.toFixed(2)}
+                  €{meal.price.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -400,7 +447,7 @@ function MealCard({
       onClick={() => {
         if (!didDrag.current) onClickDetail();
       }}
-      data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g, $${meal.price.toFixed(2)}`}
+      data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g, €${meal.price.toFixed(2)}`}
       className={`rounded-xl p-3 space-y-1.5 border meal-card ${
         isDragging
           ? `opacity-40 ${dark ? "bg-neutral-800/60 border-neutral-700/50" : "bg-white border-neutral-200/80"}`
@@ -456,7 +503,7 @@ function MealCard({
         <span
           className={`text-xs tabular-nums ${dark ? "text-neutral-500" : "text-neutral-400"}`}
         >
-          ${meal.price.toFixed(2)}
+          €{meal.price.toFixed(2)}
         </span>
       </div>
     </div>
@@ -488,10 +535,11 @@ function ShowMealPlan() {
     targetDayIndex: number,
     mealType: (typeof MEAL_TYPES)[number],
   ) => {
-    if (!dragSource) return;
+    if (!dragSource || !output) return;
     const sourceDayIndex = dragSource.dayIndex;
     setLocalDays((prev) => {
-      const current = prev ?? output!.days;
+      const base = orderDayPlansByNames(output.days, getDisplayDayOrder());
+      const current = prev ?? base;
       return current.map((d: DayPlan, i: number) => {
         if (i === sourceDayIndex)
           return { ...d, [mealType]: current[targetDayIndex][mealType] };
@@ -523,7 +571,9 @@ function ShowMealPlan() {
   if (!output) return null;
 
   const { weekStart, targets } = output;
-  const days: DayPlan[] = localDays ?? output.days;
+  const displayOrder = getDisplayDayOrder();
+  const days: DayPlan[] =
+    localDays ?? orderDayPlansByNames(output.days, displayOrder);
 
   const dayTotals = days.map((dayPlan: DayPlan) =>
     MEAL_TYPES.reduce(
@@ -541,7 +591,7 @@ function ShowMealPlan() {
   return (
     <div
       className={`min-h-screen p-4 md:p-6 ${dark ? "bg-neutral-950" : "bg-neutral-50"}`}
-      data-llm={`Weekly meal plan starting ${weekStart}. Targets: ${targets.kcal}kcal, P${targets.protein}g, C${targets.carbs}g, F${targets.fat}g per day.`}
+      data-llm={`Weekly meal plan starting ${weekStart}. Columns ordered from tomorrow (local time): ${displayOrder.join(", ")}. Targets: ${targets.kcal}kcal, P${targets.protein}g, C${targets.carbs}g, F${targets.fat}g per day.`}
     >
       <div className="mb-6 space-y-4">
         <div>
@@ -554,6 +604,11 @@ function ShowMealPlan() {
             className={`text-sm mt-0.5 ${dark ? "text-neutral-600" : "text-neutral-400"}`}
           >
             Week of {weekStart}
+          </p>
+          <p
+            className={`text-xs mt-1 ${dark ? "text-neutral-500" : "text-neutral-500"}`}
+          >
+            Days shown from tomorrow onward (your local time)
           </p>
         </div>
 
@@ -706,7 +761,7 @@ function ShowMealPlan() {
               const diff = totals.kcal - targets.kcal;
               return (
                 <div
-                  key={`total-${i}`}
+                  key={`total-${days[i].day}`}
                   className={`rounded-xl py-3 px-4 text-center space-y-1.5 border ${
                     dark
                       ? "bg-neutral-800/40 border-neutral-700/50"
@@ -731,7 +786,7 @@ function ShowMealPlan() {
                       dark ? "text-neutral-300" : "text-neutral-600"
                     }`}
                   >
-                    ${totals.price.toFixed(2)}
+                    €{totals.price.toFixed(2)}
                   </p>
                   <div
                     className={`flex justify-center gap-2 text-xs tabular-nums ${

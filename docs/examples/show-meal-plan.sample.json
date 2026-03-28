@@ -1,0 +1,718 @@
+{
+  "weekStart": "2026-03-30",
+  "targets": {
+    "kcal": 1850,
+    "protein": 115,
+    "carbs": 185,
+    "fat": 58
+  },
+  "days": [
+    {
+      "day": "Monday",
+      "breakfast": {
+        "name": "Porridge d'avena e pere",
+        "description": "Avena con bevanda vegetale e frutta",
+        "kcal": 360,
+        "protein": 20,
+        "carbs": 52,
+        "fat": 9,
+        "price": 3.2,
+        "recipe": {
+          "ingredients": [
+            "80g fiocchi d'avena",
+            "250ml bevanda d'avena",
+            "1 pera",
+            "cannella q.b."
+          ],
+          "instructions": [
+            "Portare a ebollizione la bevanda e cuocere i fiocchi 5 minuti.",
+            "Aggiungere la pera a pezzi e la cannella."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Pasta integrale al pesto",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Merluzzo al cartoccio con patate",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Tuesday",
+      "breakfast": {
+        "name": "Frittata di albumi e spinaci",
+        "description": "Colazione proteica",
+        "kcal": 370,
+        "protein": 28,
+        "carbs": 12,
+        "fat": 18,
+        "price": 4.1,
+        "recipe": {
+          "ingredients": [
+            "200g albumi",
+            "80g spinaci",
+            "1 cucchiaio olio EVO",
+            "sale e pepe"
+          ],
+          "instructions": [
+            "Saltare gli spinaci in padella.",
+            "Versare gli albumi e cuocere a fuoco medio."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Riso basmati con ceci",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Pollo alle erbe e insalata",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Wednesday",
+      "breakfast": {
+        "name": "Porridge d'avena e pere",
+        "description": "Avena con bevanda vegetale e frutta",
+        "kcal": 360,
+        "protein": 20,
+        "carbs": 52,
+        "fat": 9,
+        "price": 3.2,
+        "recipe": {
+          "ingredients": [
+            "80g fiocchi d'avena",
+            "250ml bevanda d'avena",
+            "1 pera",
+            "cannella q.b."
+          ],
+          "instructions": [
+            "Portare a ebollizione la bevanda e cuocere i fiocchi 5 minuti.",
+            "Aggiungere la pera a pezzi e la cannella."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Insalata di farro e verdure",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Tacchino con patate dolci",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Thursday",
+      "breakfast": {
+        "name": "Frittata di albumi e spinaci",
+        "description": "Colazione proteica",
+        "kcal": 370,
+        "protein": 28,
+        "carbs": 12,
+        "fat": 18,
+        "price": 4.1,
+        "recipe": {
+          "ingredients": [
+            "200g albumi",
+            "80g spinaci",
+            "1 cucchiaio olio EVO",
+            "sale e pepe"
+          ],
+          "instructions": [
+            "Saltare gli spinaci in padella.",
+            "Versare gli albumi e cuocere a fuoco medio."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Minestrone e pane integrale",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Spigola grigliata e finocchi",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Friday",
+      "breakfast": {
+        "name": "Porridge d'avena e pere",
+        "description": "Avena con bevanda vegetale e frutta",
+        "kcal": 360,
+        "protein": 20,
+        "carbs": 52,
+        "fat": 9,
+        "price": 3.2,
+        "recipe": {
+          "ingredients": [
+            "80g fiocchi d'avena",
+            "250ml bevanda d'avena",
+            "1 pera",
+            "cannella q.b."
+          ],
+          "instructions": [
+            "Portare a ebollizione la bevanda e cuocere i fiocchi 5 minuti.",
+            "Aggiungere la pera a pezzi e la cannella."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Wrap di tacchino e hummus",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Tempeh in padella e broccoli",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Saturday",
+      "breakfast": {
+        "name": "Frittata di albumi e spinaci",
+        "description": "Colazione proteica",
+        "kcal": 370,
+        "protein": 28,
+        "carbs": 12,
+        "fat": 18,
+        "price": 4.1,
+        "recipe": {
+          "ingredients": [
+            "200g albumi",
+            "80g spinaci",
+            "1 cucchiaio olio EVO",
+            "sale e pepe"
+          ],
+          "instructions": [
+            "Saltare gli spinaci in padella.",
+            "Versare gli albumi e cuocere a fuoco medio."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Cous cous alle verdure",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Bistecca magra e insalata",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    },
+    {
+      "day": "Sunday",
+      "breakfast": {
+        "name": "Porridge d'avena e pere",
+        "description": "Avena con bevanda vegetale e frutta",
+        "kcal": 360,
+        "protein": 20,
+        "carbs": 52,
+        "fat": 9,
+        "price": 3.2,
+        "recipe": {
+          "ingredients": [
+            "80g fiocchi d'avena",
+            "250ml bevanda d'avena",
+            "1 pera",
+            "cannella q.b."
+          ],
+          "instructions": [
+            "Portare a ebollizione la bevanda e cuocere i fiocchi 5 minuti.",
+            "Aggiungere la pera a pezzi e la cannella."
+          ]
+        }
+      },
+      "morningSnack": {
+        "name": "Mela e mandorle",
+        "description": "Snack veloce",
+        "kcal": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "price": 1.9,
+        "recipe": {
+          "ingredients": [
+            "1 mela",
+            "15g mandorle"
+          ],
+          "instructions": [
+            "Affettare la mela.",
+            "Aggiungere le mandorle."
+          ]
+        }
+      },
+      "lunch": {
+        "name": "Zuppa di lenticchie",
+        "description": "Pranzo mediterraneo",
+        "kcal": 520,
+        "protein": 32,
+        "carbs": 65,
+        "fat": 16,
+        "price": 6.5,
+        "recipe": {
+          "ingredients": [
+            "carboidrato o legumi 120g",
+            "verdure miste 200g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere il piatto principale.",
+            "Condire le verdure e servire."
+          ]
+        }
+      },
+      "afternoonSnack": {
+        "name": "Skyr e crackers integrali",
+        "description": "Merenda proteica",
+        "kcal": 170,
+        "protein": 14,
+        "carbs": 20,
+        "fat": 4,
+        "price": 2.4,
+        "recipe": {
+          "ingredients": [
+            "125g skyr",
+            "3 crackers integrali"
+          ],
+          "instructions": [
+            "Servire lo skyr con i crackers."
+          ]
+        }
+      },
+      "dinner": {
+        "name": "Arrosto leggero e carote",
+        "description": "Cena con proteina e contorno",
+        "kcal": 640,
+        "protein": 46,
+        "carbs": 48,
+        "fat": 24,
+        "price": 9.8,
+        "recipe": {
+          "ingredients": [
+            "proteina 180g",
+            "verdure 250g",
+            "1 cucchiaio olio EVO"
+          ],
+          "instructions": [
+            "Cuocere la proteina.",
+            "Preparare il contorno e impiattare."
+          ]
+        }
+      }
+    }
+  ]
+}
