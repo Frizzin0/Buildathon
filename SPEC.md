@@ -30,7 +30,7 @@ An MCP-powered meal planning assistant that generates a personalized weekly meal
 - **Behavior**: Stores form state in `useWidgetState`; on submit, triggers LLM via `useSendFollowUpMessage` to calculate targets and generate the plan
 
 **Widget: show-meal-plan**
-- **Input**: `{ weekStart, targets: { kcal, protein, carbs, fat }, days: DayPlan[7] }` where each day has `breakfast`, `morningSnack`, `lunch`, `afternoonSnack`, `dinner`
+- **Input**: `{ weekStart, targets: { kcal, protein, carbs, fat }, days: DayPlan[7] }` where each day has `breakfast`, `morningSnack`, `lunch`, `afternoonSnack`, `dinner` — each meal includes `name`, `description`, `kcal`, `protein`, `carbs`, `fat`, and `price` (estimated USD cost)
 - **Output**: Same as input (pass-through)
 - **Views**: 7-column Kanban board (fullscreen), 5 cards per column
 - **Behavior**: Renders meal plan; LLM re-invokes with updated data for surgical modifications; `data-llm` on each card for natural references

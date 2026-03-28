@@ -11,6 +11,7 @@ interface Meal {
   protein: number;
   carbs: number;
   fat: number;
+  price: number;
 }
 
 interface DayPlan {
@@ -63,7 +64,7 @@ function MealCard({
 
   return (
     <div
-      data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g`}
+      data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g, $${meal.price.toFixed(2)}`}
       className={`rounded-xl p-4 space-y-2 border meal-card ${
         dark
           ? "bg-neutral-800/60 border-neutral-700/50"
@@ -79,13 +80,22 @@ function MealCard({
         >
           {meal.name}
         </p>
-        <span
-          className={`text-xs font-semibold tabular-nums whitespace-nowrap mt-0.5 ${
-            dark ? "text-emerald-400" : "text-emerald-600"
-          }`}
-        >
-          {meal.kcal} kcal
-        </span>
+        <div className="flex flex-col items-end gap-0.5 shrink-0 mt-0.5">
+          <span
+            className={`text-xs font-semibold tabular-nums whitespace-nowrap ${
+              dark ? "text-emerald-400" : "text-emerald-600"
+            }`}
+          >
+            {meal.kcal} kcal
+          </span>
+          <span
+            className={`text-xs font-medium tabular-nums whitespace-nowrap ${
+              dark ? "text-neutral-400" : "text-neutral-500"
+            }`}
+          >
+            ${meal.price.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       <p
@@ -155,8 +165,9 @@ function ShowMealPlan() {
         protein: acc.protein + dayPlan[type].protein,
         carbs: acc.carbs + dayPlan[type].carbs,
         fat: acc.fat + dayPlan[type].fat,
+        price: acc.price + dayPlan[type].price,
       }),
-      { kcal: 0, protein: 0, carbs: 0, fat: 0 },
+      { kcal: 0, protein: 0, carbs: 0, fat: 0, price: 0 },
     ),
   );
 
@@ -298,6 +309,7 @@ function ShowMealPlan() {
                 protein: number;
                 carbs: number;
                 fat: number;
+                price: number;
               },
               i: number,
             ) => {
@@ -323,6 +335,13 @@ function ShowMealPlan() {
                     }`}
                   >
                     {totals.kcal} kcal
+                  </p>
+                  <p
+                    className={`text-sm font-semibold tabular-nums ${
+                      dark ? "text-neutral-300" : "text-neutral-600"
+                    }`}
+                  >
+                    ${totals.price.toFixed(2)}
                   </p>
                   <div
                     className={`flex justify-center gap-2 text-xs tabular-nums ${

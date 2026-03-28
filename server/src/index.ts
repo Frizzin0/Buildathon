@@ -8,6 +8,9 @@ const mealSchema = z.object({
   protein: z.number().describe("Protein in grams"),
   carbs: z.number().describe("Carbohydrates in grams"),
   fat: z.number().describe("Fat in grams"),
+  price: z
+    .number()
+    .describe("Estimated cost of the meal in USD, rounded to two decimals"),
 });
 
 const dayPlanSchema = z.object({
@@ -55,7 +58,8 @@ const server = new McpServer(
 
 ## Meal Planning Rules
 - Always generate exactly 5 meals per day: breakfast, morningSnack, lunch, afternoonSnack, dinner.
-- Each meal must include: name, short description, kcal, protein (g), carbs (g), fat (g).
+- Each meal must include: name, short description, kcal, protein (g), carbs (g), fat (g), and estimated price (USD).
+- Estimate meal prices realistically based on typical US grocery costs for the ingredients used. Simple snacks should be $1–3, typical meals $3–8, premium ingredients (salmon, steak) $8–15.
 - Daily meal totals must closely match the calculated kcal and macro targets (±5%).
 - Respect intolerances strictly — never include ingredients from flagged allergen groups, not even as optional toppings.
 - Respect dislikes — never include disliked foods.
