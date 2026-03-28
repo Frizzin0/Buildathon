@@ -30,10 +30,10 @@ An MCP-powered meal planning assistant that generates a personalized weekly meal
 - **Behavior**: Stores form state in `useWidgetState`; on submit, triggers LLM via `useSendFollowUpMessage` to calculate targets and generate the plan
 
 **Widget: show-meal-plan**
-- **Input**: `{ weekStart, targets: { kcal, protein, carbs, fat }, days: DayPlan[7] }` where each day has `breakfast`, `morningSnack`, `lunch`, `afternoonSnack`, `dinner` — each meal includes `name`, `description`, `kcal`, `protein`, `carbs`, `fat`, and `price` (estimated USD cost)
+- **Input**: `{ weekStart, targets: { kcal, protein, carbs, fat }, days: DayPlan[7] }` where each day has `breakfast`, `morningSnack`, `lunch`, `afternoonSnack`, `dinner` — each meal includes `name`, `description`, `kcal`, `protein`, `carbs`, `fat`, `price` (estimated USD cost), and `recipe` (`{ ingredients: string[], instructions: string[] }`)
 - **Output**: Same as input (pass-through)
-- **Views**: 7-column Kanban board (fullscreen), 5 cards per column
-- **Behavior**: Renders meal plan; LLM re-invokes with updated data for surgical modifications; `data-llm` on each card for natural references
+- **Views**: 7-column Kanban board (fullscreen), 5 compact cards per column; clicking a card opens a detail modal
+- **Behavior**: Renders meal plan; cards show name, kcal, macros, and price (no description on cards). Clicking a card opens a modal with the full description, a visual nutrition breakdown with macro bars, and the complete recipe (ingredients + instructions). LLM re-invokes with updated data for surgical modifications; `data-llm` on each card for natural references
 
 ## Nice to have
 

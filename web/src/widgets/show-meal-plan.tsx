@@ -1,8 +1,13 @@
 import "@/index.css";
 
-import { Fragment, useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useState, useRef, useCallback } from "react";
 import { mountWidget, useLayout, useDisplayMode } from "skybridge/web";
 import { useToolInfo } from "../helpers.js";
+
+interface Recipe {
+  ingredients: string[];
+  instructions: string[];
+}
 
 interface Meal {
   name: string;
@@ -12,6 +17,7 @@ interface Meal {
   carbs: number;
   fat: number;
   price: number;
+  recipe: Recipe;
 }
 
 interface DayPlan {
@@ -52,6 +58,269 @@ type DragSource = {
   mealType: (typeof MEAL_TYPES)[number];
 };
 
+type DetailTarget = {
+  meal: Meal;
+  day: string;
+  mealType: (typeof MEAL_TYPES)[number];
+};
+
+function MacroBar({
+  label,
+  value,
+  unit,
+  color,
+  max,
+  dark,
+}: {
+  label: string;
+  value: number;
+  unit: string;
+  color: string;
+  max: number;
+  dark: boolean;
+}) {
+  const pct = Math.min((value / max) * 100, 100);
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className={dark ? "text-neutral-400" : "text-neutral-500"}>
+          {label}
+        </span>
+        <span
+          className={`font-semibold tabular-nums ${dark ? "text-neutral-200" : "text-neutral-700"}`}
+        >
+          {value}
+          {unit}
+        </span>
+      </div>
+      <div
+        className={`h-1.5 rounded-full overflow-hidden ${dark ? "bg-neutral-700/50" : "bg-neutral-200"}`}
+      >
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${color}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MealDetailModal({
+  detail,
+  dark,
+  onClose,
+}: {
+  detail: DetailTarget;
+  dark: boolean;
+  onClose: () => void;
+}) {
+  const { meal, day, mealType } = detail;
+  const label = MEAL_LABELS[mealType];
+  const icon = MEAL_ICONS[mealType];
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className={`relative w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl border modal-content ${
+          dark
+            ? "bg-neutral-900 border-neutral-700/60 shadow-black/40"
+            : "bg-white border-neutral-200 shadow-neutral-300/30"
+        }`}
+      >
+        <div
+          className={`sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b backdrop-blur-sm ${
+            dark
+              ? "bg-neutral-900/90 border-neutral-700/60"
+              : "bg-white/90 border-neutral-200"
+          }`}
+        >
+          <div>
+            <p
+              className={`text-xs font-medium ${dark ? "text-neutral-500" : "text-neutral-400"}`}
+            >
+              {icon} {day} · {label}
+            </p>
+            <h2
+              className={`text-lg font-bold mt-0.5 ${dark ? "text-neutral-100" : "text-neutral-900"}`}
+            >
+              {meal.name}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className={`p-1.5 rounded-lg transition-colors ${
+              dark
+                ? "hover:bg-neutral-800 text-neutral-400"
+                : "hover:bg-neutral-100 text-neutral-500"
+            }`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-5 py-4 space-y-5">
+          {/* Description */}
+          <p
+            className={`text-sm leading-relaxed ${dark ? "text-neutral-300" : "text-neutral-600"}`}
+          >
+            {meal.description}
+          </p>
+
+          {/* Nutrition breakdown */}
+          <div
+            className={`rounded-xl p-4 space-y-3 ${dark ? "bg-neutral-800/50" : "bg-neutral-50"}`}
+          >
+            <div className="flex items-center justify-between">
+              <h3
+                className={`text-sm font-semibold ${dark ? "text-neutral-200" : "text-neutral-800"}`}
+              >
+                Nutrition
+              </h3>
+              <div className="flex items-center gap-3 text-sm">
+                <span
+                  className={`font-bold tabular-nums ${dark ? "text-emerald-400" : "text-emerald-600"}`}
+                >
+                  {meal.kcal} kcal
+                </span>
+                <span
+                  className={`font-medium tabular-nums ${dark ? "text-neutral-400" : "text-neutral-500"}`}
+                >
+                  ${meal.price.toFixed(2)}
+                </span>
+              </div>
+            </div>
+            <MacroBar
+              label="Protein"
+              value={meal.protein}
+              unit="g"
+              color={dark ? "bg-blue-400" : "bg-blue-500"}
+              max={60}
+              dark={dark}
+            />
+            <MacroBar
+              label="Carbs"
+              value={meal.carbs}
+              unit="g"
+              color={dark ? "bg-amber-400" : "bg-amber-500"}
+              max={100}
+              dark={dark}
+            />
+            <MacroBar
+              label="Fat"
+              value={meal.fat}
+              unit="g"
+              color={dark ? "bg-rose-400" : "bg-rose-500"}
+              max={40}
+              dark={dark}
+            />
+          </div>
+
+          {/* Calorie composition pie-ish summary */}
+          <div
+            className={`flex gap-3 text-xs tabular-nums ${dark ? "text-neutral-400" : "text-neutral-500"}`}
+          >
+            <span>
+              {Math.round((meal.protein * 4 * 100) / meal.kcal)}% from protein
+            </span>
+            <span>·</span>
+            <span>
+              {Math.round((meal.carbs * 4 * 100) / meal.kcal)}% from carbs
+            </span>
+            <span>·</span>
+            <span>
+              {Math.round((meal.fat * 9 * 100) / meal.kcal)}% from fat
+            </span>
+          </div>
+
+          {/* Recipe */}
+          {meal.recipe && (
+            <>
+              {/* Ingredients */}
+              <div>
+                <h3
+                  className={`text-sm font-semibold mb-2 ${dark ? "text-neutral-200" : "text-neutral-800"}`}
+                >
+                  Ingredients
+                </h3>
+                <ul className="space-y-1.5">
+                  {meal.recipe.ingredients.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <span
+                        className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${dark ? "bg-emerald-500" : "bg-emerald-400"}`}
+                      />
+                      <span
+                        className={
+                          dark ? "text-neutral-300" : "text-neutral-600"
+                        }
+                      >
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Instructions */}
+              <div>
+                <h3
+                  className={`text-sm font-semibold mb-2 ${dark ? "text-neutral-200" : "text-neutral-800"}`}
+                >
+                  Instructions
+                </h3>
+                <ol className="space-y-2">
+                  {meal.recipe.instructions.map((step, i) => (
+                    <li key={i} className="flex gap-3 text-sm">
+                      <span
+                        className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                          dark
+                            ? "bg-neutral-700 text-neutral-300"
+                            : "bg-neutral-200 text-neutral-600"
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                      <span
+                        className={`pt-0.5 ${dark ? "text-neutral-300" : "text-neutral-600"}`}
+                      >
+                        {step}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MealCard({
   meal,
   day,
@@ -63,6 +332,7 @@ function MealCard({
   onDragStart,
   onDragEnd,
   onSwap,
+  onClickDetail,
 }: {
   meal: Meal;
   day: string;
@@ -74,6 +344,7 @@ function MealCard({
   onDragStart: () => void;
   onDragEnd: () => void;
   onSwap: () => void;
+  onClickDetail: () => void;
 }) {
   const label = MEAL_LABELS[mealType];
   const isDragging =
@@ -84,11 +355,13 @@ function MealCard({
     dragSource.dayIndex !== dayIndex;
   const [isOver, setIsOver] = useState(false);
   const enterCount = useRef(0);
+  const didDrag = useRef(false);
 
   return (
     <div
       draggable
       onDragStart={(e) => {
+        didDrag.current = true;
         e.dataTransfer.effectAllowed = "move";
         onDragStart();
       }}
@@ -96,6 +369,9 @@ function MealCard({
         enterCount.current = 0;
         setIsOver(false);
         onDragEnd();
+        setTimeout(() => {
+          didDrag.current = false;
+        }, 0);
       }}
       onDragEnter={(e) => {
         if (!isValidTarget) return;
@@ -121,8 +397,11 @@ function MealCard({
         setIsOver(false);
         if (isValidTarget) onSwap();
       }}
+      onClick={() => {
+        if (!didDrag.current) onClickDetail();
+      }}
       data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g, $${meal.price.toFixed(2)}`}
-      className={`rounded-xl p-4 space-y-2 border meal-card ${
+      className={`rounded-xl p-3 space-y-1.5 border meal-card ${
         isDragging
           ? `opacity-40 ${dark ? "bg-neutral-800/60 border-neutral-700/50" : "bg-white border-neutral-200/80"}`
           : isOver
@@ -134,60 +413,50 @@ function MealCard({
                 ? "bg-emerald-950/20 border-emerald-700/40"
                 : "bg-emerald-50/60 border-emerald-300/60"
               : dark
-                ? "bg-neutral-800/60 border-neutral-700/50"
-                : "bg-white border-neutral-200/80"
+                ? "bg-neutral-800/60 border-neutral-700/50 hover:bg-neutral-750/70 hover:border-neutral-600/60"
+                : "bg-white border-neutral-200/80 hover:bg-neutral-50 hover:border-neutral-300"
       }`}
       style={{ animationDelay: `${index * 30}ms` }}
     >
       <div className="flex items-start justify-between gap-2">
         <p
-          className={`text-base font-semibold leading-snug ${
+          className={`text-sm font-semibold leading-snug ${
             dark ? "text-neutral-100" : "text-neutral-900"
           }`}
         >
           {meal.name}
         </p>
-        <div className="flex flex-col items-end gap-0.5 shrink-0 mt-0.5">
-          <span
-            className={`text-xs font-semibold tabular-nums whitespace-nowrap ${
-              dark ? "text-emerald-400" : "text-emerald-600"
-            }`}
-          >
-            {meal.kcal} kcal
-          </span>
-          <span
-            className={`text-xs font-medium tabular-nums whitespace-nowrap ${
-              dark ? "text-neutral-400" : "text-neutral-500"
-            }`}
-          >
-            ${meal.price.toFixed(2)}
-          </span>
-        </div>
+        <span
+          className={`text-xs font-semibold tabular-nums whitespace-nowrap shrink-0 mt-0.5 ${
+            dark ? "text-emerald-400" : "text-emerald-600"
+          }`}
+        >
+          {meal.kcal}
+        </span>
       </div>
 
-      <p
-        className={`text-sm leading-relaxed ${
-          dark ? "text-neutral-400" : "text-neutral-500"
-        }`}
-      >
-        {meal.description}
-      </p>
-
-      <div className="flex items-center gap-3 text-xs tabular-nums pt-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5 text-xs tabular-nums">
+          <span
+            className={`font-medium ${dark ? "text-blue-400/80" : "text-blue-600/70"}`}
+          >
+            P{meal.protein}
+          </span>
+          <span
+            className={`font-medium ${dark ? "text-amber-400/80" : "text-amber-600/70"}`}
+          >
+            C{meal.carbs}
+          </span>
+          <span
+            className={`font-medium ${dark ? "text-rose-400/80" : "text-rose-600/70"}`}
+          >
+            F{meal.fat}
+          </span>
+        </div>
         <span
-          className={`font-medium ${dark ? "text-blue-400/80" : "text-blue-600/70"}`}
+          className={`text-xs tabular-nums ${dark ? "text-neutral-500" : "text-neutral-400"}`}
         >
-          P {meal.protein}g
-        </span>
-        <span
-          className={`font-medium ${dark ? "text-amber-400/80" : "text-amber-600/70"}`}
-        >
-          C {meal.carbs}g
-        </span>
-        <span
-          className={`font-medium ${dark ? "text-rose-400/80" : "text-rose-600/70"}`}
-        >
-          F {meal.fat}g
+          ${meal.price.toFixed(2)}
         </span>
       </div>
     </div>
@@ -202,6 +471,9 @@ function ShowMealPlan() {
   const [dragSource, setDragSource] = useState<DragSource | null>(null);
   const [localDays, setLocalDays] = useState<DayPlan[] | null>(null);
   const [prevOutput, setPrevOutput] = useState(output);
+  const [detail, setDetail] = useState<DetailTarget | null>(null);
+
+  const closeDetail = useCallback(() => setDetail(null), []);
 
   if (output !== prevOutput) {
     setPrevOutput(output);
@@ -395,6 +667,13 @@ function ShowMealPlan() {
                   }
                   onDragEnd={() => setDragSource(null)}
                   onSwap={() => handleSwap(colIndex, mealType)}
+                  onClickDetail={() =>
+                    setDetail({
+                      meal: dayPlan[mealType],
+                      day: dayPlan.day,
+                      mealType,
+                    })
+                  }
                 />
               ))}
             </Fragment>
@@ -469,6 +748,10 @@ function ShowMealPlan() {
           )}
         </div>
       </div>
+
+      {detail && (
+        <MealDetailModal detail={detail} dark={dark} onClose={closeDetail} />
+      )}
     </div>
   );
 }
