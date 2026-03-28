@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import {
   mountWidget,
   getAdaptor,
-  useWidgetState,
   useSendFollowUpMessage,
 } from "skybridge/web";
+import { useWidgetStateDeferred } from "../hooks/use-widget-state-deferred.js";
 import steps from "../data/onboarding-steps.json" with { type: "json" };
 
 type Step = (typeof steps)[number];
@@ -49,7 +49,7 @@ const INITIAL_STATE: ProfileState = {
 };
 
 function CollectProfile() {
-  const [state, setState] = useWidgetState(INITIAL_STATE);
+  const [state, setState] = useWidgetStateDeferred<ProfileState>(INITIAL_STATE);
   const [currentStep, setCurrentStep] = useState(0);
   const sendMessage = useSendFollowUpMessage();
 

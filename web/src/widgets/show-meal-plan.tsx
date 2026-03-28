@@ -517,15 +517,13 @@ function ShowMealPlan() {
   const dark = theme === "dark";
   const [dragSource, setDragSource] = useState<DragSource | null>(null);
   const [localDays, setLocalDays] = useState<DayPlan[] | null>(null);
-  const [prevOutput, setPrevOutput] = useState(output);
   const [detail, setDetail] = useState<DetailTarget | null>(null);
 
   const closeDetail = useCallback(() => setDetail(null), []);
 
-  if (output !== prevOutput) {
-    setPrevOutput(output);
-    if (localDays) setLocalDays(null);
-  }
+  useEffect(() => {
+    setLocalDays(null);
+  }, [output]);
 
   useEffect(() => {
     setDisplayMode("fullscreen");
