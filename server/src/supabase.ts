@@ -189,8 +189,9 @@ export async function saveProfile(profile: {
 
 export async function getCurrentPlan(
   userId: string,
+  weekStart?: string,
 ): Promise<WidgetPlan | null> {
-  const weekStart = currentWeekMonday();
+  const ws = weekStart ?? currentWeekMonday();
 
   const db = getClient();
 
@@ -198,7 +199,7 @@ export async function getCurrentPlan(
     .from("meal_plans")
     .select("*")
     .eq("user_id", userId)
-    .eq("week_start", weekStart)
+    .eq("week_start", ws)
     .eq("is_active", true)
     .limit(1)
     .maybeSingle();

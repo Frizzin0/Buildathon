@@ -69,22 +69,22 @@ const server = new McpServer(
    c. Calculate TDEE and macro targets from the profile.
    d. Call get-recent-meals with the new userId (will return empty for new users).
    e. Generate a full 7-day meal plan.
-   f. Display it with show-meal-plan.
-   g. Call save-meal-plan to persist it.
+   f. Call save-meal-plan to persist it.
+   g. Call show-meal-plan with userId and weekStart to display the saved plan.
 4. If lookup-user returns found = true AND currentWeekPlan is present:
    a. Greet the returning user by name.
-   b. Display their existing plan with show-meal-plan using the data from currentWeekPlan.
+   b. Call show-meal-plan with the user's id to display their existing plan.
    c. Tell them "Here's your meal plan for this week. Want to change anything?"
 5. If lookup-user returns found = true but currentWeekPlan is null:
    a. Greet the returning user by name.
    b. Call get-recent-meals to fetch meals from the last 2 weeks.
    c. Calculate TDEE and macro targets from the stored profile.
    d. Generate a new 7-day plan. AVOID repeating any meal names returned by get-recent-meals — maximize variety.
-   e. Display it with show-meal-plan.
-   f. Call save-meal-plan to persist it.
+   e. Call save-meal-plan to persist it.
+   f. Call show-meal-plan with userId and weekStart to display the saved plan.
 6. On modification requests:
-   a. Re-invoke show-meal-plan with the complete plan where only the changed meal(s) differ.
-   b. Call save-meal-plan with the full updated plan to persist the change.
+   a. Call save-meal-plan with the full updated plan (complete plan where only the changed meal(s) differ).
+   b. Re-invoke show-meal-plan with userId to refresh the display.
 
 ## TDEE & Macro Calculation
 - Use the Mifflin-St Jeor equation:
@@ -114,10 +114,10 @@ const server = new McpServer(
 - When get-recent-meals returns meal names, do NOT reuse any of those names. Introduce new dishes to maximize weekly variety.
 
 ## Modifications
-- When the user asks to change a specific meal, re-invoke show-meal-plan with the complete plan where only the requested meal differs.
+- When the user asks to change a specific meal, call save-meal-plan with the complete plan where only the requested meal differs.
 - Keep unchanged meals exactly as they were — do not regenerate the entire plan.
 - If a modification would significantly impact daily macro balance, adjust adjacent meals slightly to compensate.
-- ALWAYS call save-meal-plan after any modification so the change is persisted.`,
+- After saving, call show-meal-plan with userId to refresh the display.`,
   },
 )
   // ---------------------------------------------------------------------------
@@ -358,27 +358,30 @@ const server = new McpServer(
     { description: "Weekly meal plan Kanban board" },
     {
       description:
-        "Display a weekly meal plan as an interactive Kanban board. Provide the full 7-day plan with nutritional targets. To update a single meal, re-invoke this tool with the complete plan where only the changed meal differs. Always call save-meal-plan afterwards to persist.",
+        "Display a weekly meal plan as an interactive Kanban board. The plan is fetched from the database, so you MUST call save-meal-plan first to persist the plan before calling this widget. To update a single meal, call save-meal-plan with the full updated plan, then re-invoke this widget to refresh the display.",
       inputSchema: {
+        userId: z.string().uuid().describe("The user's UUID"),
         weekStart: z
           .string()
-          .describe("Start date of the week, e.g. '2026-03-30'"),
-        targets: targetsSchema.describe("Daily nutritional targets"),
-        days: z
-          .array(dayPlanSchema)
-          .length(7)
+          .optional()
           .describe(
-            "Exactly 7 day plans, one per day Monday through Sunday",
+            "Start date of the week, e.g. '2026-03-30'. Defaults to the current week if omitted.",
           ),
       },
     },
-    async (input) => {
+    async ({ userId, weekStart }) => {
+      const plan = await getCurrentPlan(userId, weekStart);
+      if (!plan) {
+        throw new Error(
+          "No active meal plan found. Call save-meal-plan first to persist the plan before displaying it.",
+        );
+      }
       return {
-        structuredContent: input,
+        structuredContent: plan,
         content: [
           {
             type: "text" as const,
-            text: `Meal plan for week starting ${input.weekStart} is now displayed.`,
+            text: `Meal plan for week starting ${plan.weekStart} is now displayed.`,
           },
         ],
       };
