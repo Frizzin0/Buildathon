@@ -1,6 +1,6 @@
 import "@/index.css";
 
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import { mountWidget, useLayout, useDisplayMode } from "skybridge/web";
 import { useToolInfo } from "../helpers.js";
 
@@ -47,28 +47,95 @@ const MEAL_ICONS: Record<string, string> = {
   dinner: "☽",
 };
 
+type DragSource = {
+  dayIndex: number;
+  mealType: (typeof MEAL_TYPES)[number];
+};
+
 function MealCard({
   meal,
   day,
   mealType,
+  dayIndex,
   index,
   dark,
+  dragSource,
+  onDragStart,
+  onDragEnd,
+  onSwap,
 }: {
   meal: Meal;
   day: string;
-  mealType: string;
+  mealType: (typeof MEAL_TYPES)[number];
+  dayIndex: number;
   index: number;
   dark: boolean;
+  dragSource: DragSource | null;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+  onSwap: () => void;
 }) {
   const label = MEAL_LABELS[mealType];
+  const isDragging =
+    dragSource?.dayIndex === dayIndex && dragSource?.mealType === mealType;
+  const isValidTarget =
+    dragSource !== null &&
+    dragSource.mealType === mealType &&
+    dragSource.dayIndex !== dayIndex;
+  const [isOver, setIsOver] = useState(false);
+  const enterCount = useRef(0);
 
   return (
     <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart();
+      }}
+      onDragEnd={() => {
+        enterCount.current = 0;
+        setIsOver(false);
+        onDragEnd();
+      }}
+      onDragEnter={(e) => {
+        if (!isValidTarget) return;
+        e.preventDefault();
+        enterCount.current++;
+        setIsOver(true);
+      }}
+      onDragOver={(e) => {
+        if (!isValidTarget) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      }}
+      onDragLeave={() => {
+        enterCount.current--;
+        if (enterCount.current <= 0) {
+          enterCount.current = 0;
+          setIsOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        enterCount.current = 0;
+        setIsOver(false);
+        if (isValidTarget) onSwap();
+      }}
       data-llm={`${day} ${label}: ${meal.name}, ${meal.kcal}kcal, P${meal.protein}g C${meal.carbs}g F${meal.fat}g, $${meal.price.toFixed(2)}`}
       className={`rounded-xl p-4 space-y-2 border meal-card ${
-        dark
-          ? "bg-neutral-800/60 border-neutral-700/50"
-          : "bg-white border-neutral-200/80"
+        isDragging
+          ? `opacity-40 ${dark ? "bg-neutral-800/60 border-neutral-700/50" : "bg-white border-neutral-200/80"}`
+          : isOver
+            ? dark
+              ? "ring-2 ring-emerald-400/70 bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-500/10"
+              : "ring-2 ring-emerald-500/70 bg-emerald-50 border-emerald-400 shadow-lg shadow-emerald-500/10"
+            : isValidTarget
+              ? dark
+                ? "bg-emerald-950/20 border-emerald-700/40"
+                : "bg-emerald-50/60 border-emerald-300/60"
+              : dark
+                ? "bg-neutral-800/60 border-neutral-700/50"
+                : "bg-white border-neutral-200/80"
       }`}
       style={{ animationDelay: `${index * 30}ms` }}
     >
@@ -132,10 +199,37 @@ function ShowMealPlan() {
   const { theme } = useLayout();
   const [, setDisplayMode] = useDisplayMode();
   const dark = theme === "dark";
+  const [dragSource, setDragSource] = useState<DragSource | null>(null);
+  const [localDays, setLocalDays] = useState<DayPlan[] | null>(null);
+  const [prevOutput, setPrevOutput] = useState(output);
+
+  if (output !== prevOutput) {
+    setPrevOutput(output);
+    if (localDays) setLocalDays(null);
+  }
 
   useEffect(() => {
     setDisplayMode("fullscreen");
   }, [setDisplayMode]);
+
+  const handleSwap = (
+    targetDayIndex: number,
+    mealType: (typeof MEAL_TYPES)[number],
+  ) => {
+    if (!dragSource) return;
+    const sourceDayIndex = dragSource.dayIndex;
+    setLocalDays((prev) => {
+      const current = prev ?? output!.days;
+      return current.map((d: DayPlan, i: number) => {
+        if (i === sourceDayIndex)
+          return { ...d, [mealType]: current[targetDayIndex][mealType] };
+        if (i === targetDayIndex)
+          return { ...d, [mealType]: current[sourceDayIndex][mealType] };
+        return d;
+      });
+    });
+    setDragSource(null);
+  };
 
   if (isPending) {
     return (
@@ -156,7 +250,8 @@ function ShowMealPlan() {
 
   if (!output) return null;
 
-  const { weekStart, targets, days } = output;
+  const { weekStart, targets } = output;
+  const days: DayPlan[] = localDays ?? output.days;
 
   const dayTotals = days.map((dayPlan: DayPlan) =>
     MEAL_TYPES.reduce(
@@ -261,11 +356,19 @@ function ShowMealPlan() {
           })}
 
           {/* Meal rows: each row = 1 label cell + 7 meal cards */}
-          {MEAL_TYPES.map((mealType, rowIndex) => (
+          {MEAL_TYPES.map((mealType, rowIndex) => {
+            const rowActive = dragSource?.mealType === mealType;
+            return (
             <Fragment key={mealType}>
               <div
-                className={`flex flex-col items-center justify-center rounded-xl py-3 px-2 sticky left-0 z-10 ${
-                  dark ? "bg-neutral-950" : "bg-neutral-50"
+                className={`flex flex-col items-center justify-center rounded-xl py-3 px-2 sticky left-0 z-10 transition-colors duration-150 ${
+                  rowActive
+                    ? dark
+                      ? "bg-emerald-950/30"
+                      : "bg-emerald-50/80"
+                    : dark
+                      ? "bg-neutral-950"
+                      : "bg-neutral-50"
                 }`}
               >
                 <span className="text-lg mb-1">{MEAL_ICONS[mealType]}</span>
@@ -283,12 +386,20 @@ function ShowMealPlan() {
                   meal={dayPlan[mealType]}
                   day={dayPlan.day}
                   mealType={mealType}
+                  dayIndex={colIndex}
                   index={rowIndex * 7 + colIndex}
                   dark={dark}
+                  dragSource={dragSource}
+                  onDragStart={() =>
+                    setDragSource({ dayIndex: colIndex, mealType })
+                  }
+                  onDragEnd={() => setDragSource(null)}
+                  onSwap={() => handleSwap(colIndex, mealType)}
                 />
               ))}
             </Fragment>
-          ))}
+            );
+          })}
 
           {/* Daily totals footer row */}
           <div
