@@ -566,7 +566,7 @@ function ShowMealPlan() {
     );
   }
 
-  if (!output) return null;
+  if (!output || !output.days) return null;
 
   const { weekStart, targets } = output;
   const displayOrder = getDisplayDayOrder();
